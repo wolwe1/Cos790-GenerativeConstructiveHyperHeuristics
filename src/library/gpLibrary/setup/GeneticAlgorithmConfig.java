@@ -73,11 +73,11 @@ public abstract class GeneticAlgorithmConfig<T> {
 
         lookAhead = (int) uiController.askNumber("Look Ahead",0);
 
-        populationSize = (int) uiController.askNumber("Population Size",10);
-        numberOfGenerations = (int) uiController.askNumber("Number of generations",15);
-        numberOfRuns = (int) uiController.askNumber("Number of runs",1);
+        populationSize = (int) uiController.askNumber("Population Size",15);
+        numberOfGenerations = (int) uiController.askNumber("Number of generations",30);
+        numberOfRuns = (int) uiController.askNumber("Number of runs",10);
         trainingSetPercentage = (int) uiController.askNumber("Training set percentage",0.7);
-        printLevel = (PrintLevel) uiController.askEnum("Printout level",PrintLevel.class,PrintLevel.MINOR);
+        printLevel = (PrintLevel) uiController.askEnum("Printout level",PrintLevel.class,PrintLevel.NONE);
 
         functionSet = createFunctionSet();
         terminalSet = createTerminalSet();

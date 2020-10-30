@@ -7,6 +7,8 @@ import library.gpLibrary.infrastructure.interfaces.IGeneticOperator;
 import library.gpLibrary.infrastructure.interfaces.IPopulationManager;
 import library.gpLibrary.models.highOrder.implementation.PopulationMember;
 import library.gpLibrary.infrastructure.interfaces.IFitnessFunction;
+import library.gpLibrary.models.highOrder.implementation.PopulationStatistics;
+import library.gpLibrary.models.highOrder.interfaces.IMemberStatistics;
 import library.gpLibrary.models.primitives.enums.PrintLevel;
 
 import java.util.HashMap;
@@ -20,6 +22,7 @@ public class GeneticAlgorithm<T> implements IGeneticAlgorithm<T> {
     protected int _numGenerations;
     protected boolean _fixedPopulation;
     protected PrintLevel _printLevel;
+    private PopulationStatistics<IMemberStatistics> runStats;
 
     /**
      * Sets the values necessary for the genetic algorithm to operate
@@ -74,30 +77,53 @@ public class GeneticAlgorithm<T> implements IGeneticAlgorithm<T> {
         if(populationManager == null) throw new RuntimeException("Population manager was not initialised");
 
         PopulationMember<T> bestPerformer = null;
+        runStats = null;
         int bestPerformingGeneration = 0;
 
         populationManager.reset();
         populationManager.createPopulation(_populationSize);
 
-
+        long startTime = System.nanoTime();
         for (int i = 0; i < _numGenerations; i++) {
-            //long startTime = System.nanoTime();
+
 
             PopulationMember<T> best = performGeneration(i);
 
-            //long endTime = System.nanoTime();
 
-            //long duration = (endTime - startTime);  //divide by 1000000 to get milliseconds.
-            //duration = ((duration/ 1000000L));
-
-            //System.out.println("Generation took " + duration + "milliseconds");
             if(populationManager.firstFitterThanSecond(best,bestPerformer)){
                 bestPerformer = best;
                 bestPerformingGeneration = i;
             }
         }
+        long endTime = System.nanoTime();
+
+        long duration = (endTime - startTime);  //divide by 1000000 to get milliseconds.
+        duration = ((duration/ 1000000L));
+        duration = ((duration/ 1000L));
+        //System.out.println("Generation took " + duration + "milliseconds");
         summarise(bestPerformer,bestPerformingGeneration);
+
+        PopulationStatistics<IMemberStatistics> stats = new PopulationStatistics<>();
+        IMemberStatistics<PopulationMember<T>> bestMember = new PopulationStatistics<>();
+        bestMember.setMeasure("Best Member",bestPerformer);
+
+        IMemberStatistics<Long> generationTime = new PopulationStatistics<>();
+        generationTime.setMeasure("Generation time",duration);
+
+        IMemberStatistics<Integer> generationFound = new PopulationStatistics<>();
+        generationFound.setMeasure("Found in generation",bestPerformingGeneration);
+
+        stats.setMeasure("Best member",bestMember);
+        stats.setMeasure("Generation run time",generationTime);
+        stats.setMeasure("Generation found",generationFound);
+
+        setRunStats(stats);
+
         return bestPerformer;
+    }
+
+    private void setRunStats(PopulationStatistics<IMemberStatistics> stats) {
+        this.runStats = stats;
     }
 
     public void addOperator(IGeneticOperator<T> newOperator){
@@ -111,15 +137,14 @@ public class GeneticAlgorithm<T> implements IGeneticAlgorithm<T> {
      * @param bestPerformingGeneration The generation the best performer was found in
      */
     protected void summarise(PopulationMember<T> bestPerformer, int bestPerformingGeneration){
-        //if(_printLevel == PrintLevel.NONE) return;
+        if(_printLevel == PrintLevel.NONE) return;
 
         Printer.printLine();
         Printer.print("Summary of algorithm performance");
         Printer.underline();
 
-//        if(_printLevel == PrintLevel.MINOR)
-//            _populationManager.printBasicHistory();
-//        else
+
+        if(_printLevel == PrintLevel.ALL || _printLevel == PrintLevel.MAJOR)
             populationManager.printFullHistory();
 
         Printer.printLine();
@@ -145,13 +170,11 @@ public class GeneticAlgorithm<T> implements IGeneticAlgorithm<T> {
 
     private void display(int generation,PopulationMember<T> member) {
 
-        if(_printLevel == PrintLevel.NONE) return;
+        if(_printLevel == PrintLevel.NONE || _printLevel == PrintLevel.MINOR) return;
 
         Printer.printLine();
         Printer.print("Generation " + generation);
         Printer.printLine();
-
-        if(_printLevel == PrintLevel.MINOR) return;
 
         Printer.print("Best performing member:" + member.getId());
         Printer.underline();
@@ -200,5 +223,13 @@ public class GeneticAlgorithm<T> implements IGeneticAlgorithm<T> {
 
     public IFitnessFunction<T> getFitnessFunction() {
         return populationManager.getFitnessFunction();
+    }
+
+    public PrintLevel getPrintLevel() {
+        return this._printLevel;
+    }
+
+    public PopulationStatistics<IMemberStatistics> getRunStats() {
+        return this.runStats;
     }
 }

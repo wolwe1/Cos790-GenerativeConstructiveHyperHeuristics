@@ -1,52 +1,15 @@
 package u17112631;
 
-import library.gpLibrary.helpers.Printer;
-import library.gpLibrary.helpers.UIController;
-import library.gpLibrary.infrastructure.abstractClasses.GeneticAlgorithm;
-import library.gpLibrary.models.highOrder.implementation.PopulationMember;
-import library.gpLibrary.setup.factories.implementations.GeneticAlgorithmFactory;
-import library.helpers.FileManager;
-import u17112631.travellingSalesman.DataConverter;
-import u17112631.travellingSalesman.TSPFitnessFunctionFactory;
-import u17112631.travellingSalesman.TSPPopulationManagerFactory;
-import u17112631.travellingSalesman.TSPTreeGeneratorFactory;
-import u17112631.travellingSalesman.infrastructure.TSPConfig;
-import u17112631.travellingSalesman.primitives.TSProblem;
-
-import java.util.ArrayList;
-import java.util.List;
-
 public class Main {
 
     public static void main(String[] args) {
 	// write your code here
 
-        //long SEED = 1;
-        FileManager fileManager = new FileManager(new DataConverter());
-        UIController ui = new UIController(true,fileManager);
+        GeneticAlgorithmRunner<Double> runner = new GeneticAlgorithmRunner<>();
 
-        DataConverter converter = fileManager.loadDataConverter();
+        runner.run();
 
-        TSProblem problem = converter.getProblem();
-        GeneticAlgorithmFactory<Double> factory = new GeneticAlgorithmFactory<>(
-                new TSPFitnessFunctionFactory<>(problem),
-                new TSPTreeGeneratorFactory(),
-                new TSPPopulationManagerFactory<>(),
-                new TSPConfig(ui));
 
-        GeneticAlgorithm<Double> geneticAlgorithm = factory.createGeneticAlgorithm();
-
-        List<PopulationMember<Double>> bestMembersFromEachRun = new ArrayList<>();
-
-        for (int i = 0; i < factory.getConfig().getNumberOfRuns(); i++) {
-            Printer.print("Run " + i);
-            Printer.underline();
-            geneticAlgorithm.setSeed(i);
-            bestMembersFromEachRun.add(geneticAlgorithm.run());
-            Printer.underline();
-        }
-
-//        IFitnessFunction<Double> fitnessFunction = geneticAlgorithm.getFitnessFunction();
 //
 //        List<IMemberStatistics<Double>> stats = new ArrayList<>();
 //        List<IMemberStatistics<Double>> generelisationStats = new ArrayList<>();
