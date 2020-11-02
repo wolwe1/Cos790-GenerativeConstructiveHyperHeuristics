@@ -29,6 +29,10 @@ public abstract class GeneticAlgorithmConfig<T> {
 
     private boolean isConfigured;
     private PrintLevel printLevel;
+    private int tournamentSize;
+    private double reproductionRate;
+    private double mutationRate;
+    private double crossoverRate;
 
     public GeneticAlgorithmConfig(UIController UIController){
         this.uiController = UIController;
@@ -65,7 +69,7 @@ public abstract class GeneticAlgorithmConfig<T> {
     public void setup() {
 
         seed = (long) uiController.askNumber("Seed",0);
-
+        //Tree generation
         maxDepth = (int) uiController.askNumber("Maximum initial tree depth",5);
         maxBreadth = (int) uiController.askNumber("Maximum breadth",2);
         maxIncrease = (int) uiController.askNumber("Maximum depth increase",2);
@@ -73,9 +77,16 @@ public abstract class GeneticAlgorithmConfig<T> {
 
         lookAhead = (int) uiController.askNumber("Look Ahead",0);
 
-        populationSize = (int) uiController.askNumber("Population Size",15);
-        numberOfGenerations = (int) uiController.askNumber("Number of generations",30);
+        //Genetic algorithm
+        populationSize = (int) uiController.askNumber("Population Size",10);
+        numberOfGenerations = (int) uiController.askNumber("Number of generations",5);
         numberOfRuns = (int) uiController.askNumber("Number of runs",10);
+        tournamentSize = (int) uiController.askNumber("Tournament size",2);
+        reproductionRate = uiController.askNumber("Reproduction rate",0.2);
+        mutationRate = uiController.askNumber("Mutation rate",0.2);
+        crossoverRate = uiController.askNumber("Crossover rate",0.2);
+
+        //Other
         trainingSetPercentage = (int) uiController.askNumber("Training set percentage",0.7);
         printLevel = (PrintLevel) uiController.askEnum("Printout level",PrintLevel.class,PrintLevel.NONE);
 
@@ -120,5 +131,21 @@ public abstract class GeneticAlgorithmConfig<T> {
 
     public PrintLevel getPrintLevel() {
         return this.printLevel;
+    }
+
+    public int getTournamentSize() {
+        return this.tournamentSize;
+    }
+
+    public double getReproductionRate() {
+        return this.reproductionRate;
+    }
+
+    public double getMutationRate() {
+        return this.mutationRate;
+    }
+
+    public double getCrossoverRate() {
+        return this.crossoverRate;
     }
 }

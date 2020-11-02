@@ -27,7 +27,7 @@ public abstract class BasicFunction<T> extends IOperateUpFunction<T> {
     @Override
     public boolean requiresTerminals(int maxDepth) {
         if(_level >= maxDepth - 1){
-            return children.size() != _maxChildren;
+            return true;
         }
 
         for (Node<T> child : children) {

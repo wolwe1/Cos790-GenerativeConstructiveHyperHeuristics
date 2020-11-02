@@ -21,9 +21,11 @@ public class ClosestUnplacedCityTo extends TSPTerminal {
         double smallestDistance = Double.POSITIVE_INFINITY;
 
         for (TSNode unplacedCity : unplacedCities) {
-            double distanceToCity = currentCity.getDistanceTo(unplacedCity);
-            if(distanceToCity < smallestDistance)
-                smallestDistance = distanceToCity;
+            if(!currentCity.equals(unplacedCity)){
+                double distanceToCity = currentCity.getDistanceTo(unplacedCity);
+                if(distanceToCity < smallestDistance)
+                    smallestDistance = distanceToCity;
+            }
         }
 
         value = smallestDistance;

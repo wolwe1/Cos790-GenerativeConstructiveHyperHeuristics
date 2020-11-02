@@ -19,7 +19,7 @@ public class StatisticsManager {
 
         for (Map.Entry<String, Double> measure : measures.entrySet()) {
             measure.setValue( measure.getValue()/populationStatistics.size());
-            averagePopStats.setMeasure(measure.getKey(),measure.getValue());
+            averagePopStats.setMeasure("Average " + measure.getKey(),measure.getValue());
         }
 
         return averagePopStats;
@@ -61,12 +61,12 @@ public class StatisticsManager {
             double total = 0d;
 
             for (IMemberStatistics<Double> member : members) {
-                double differance = member.getMeasure(measure.getKey()).getValue() - meanForMeasure;
+                double differance = member.getMeasure(measure.getKey().replace("Average ","")).getValue() - meanForMeasure;
                 total += Math.pow(differance,2);
             }
             total = total/members.size();
             total = Math.sqrt(total);
-            standardDeviations.setMeasure(measure.getKey(),total);
+            standardDeviations.setMeasure("Std dev of " + measure.getKey().replace("Average ",""),total);
         }
 
         return standardDeviations;

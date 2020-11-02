@@ -2,13 +2,12 @@ package library.gpLibrary.infrastructure.abstractClasses;
 
 import library.gpLibrary.helpers.Printer;
 import library.gpLibrary.infrastructure.implementation.operators.Create;
+import library.gpLibrary.infrastructure.interfaces.IFitnessFunction;
 import library.gpLibrary.infrastructure.interfaces.IGeneticAlgorithm;
 import library.gpLibrary.infrastructure.interfaces.IGeneticOperator;
 import library.gpLibrary.infrastructure.interfaces.IPopulationManager;
+import library.gpLibrary.models.highOrder.GeneticAlgorithmSummary;
 import library.gpLibrary.models.highOrder.implementation.PopulationMember;
-import library.gpLibrary.infrastructure.interfaces.IFitnessFunction;
-import library.gpLibrary.models.highOrder.implementation.PopulationStatistics;
-import library.gpLibrary.models.highOrder.interfaces.IMemberStatistics;
 import library.gpLibrary.models.primitives.enums.PrintLevel;
 
 import java.util.HashMap;
@@ -22,8 +21,6 @@ public class GeneticAlgorithm<T> implements IGeneticAlgorithm<T> {
     protected int _numGenerations;
     protected boolean _fixedPopulation;
     protected PrintLevel _printLevel;
-    private PopulationStatistics<IMemberStatistics> runStats;
-
     /**
      * Sets the values necessary for the genetic algorithm to operate
      * @param populationSize The size of the population to manage
@@ -71,13 +68,13 @@ public class GeneticAlgorithm<T> implements IGeneticAlgorithm<T> {
      * Performs the genetic algorithm, displaying statistics and returning the best performing member
      * @return The best performing member of the run
      */
-    public PopulationMember<T> run() {
+    public GeneticAlgorithmSummary<T> run() {
 
         //Check conditions
         if(populationManager == null) throw new RuntimeException("Population manager was not initialised");
 
         PopulationMember<T> bestPerformer = null;
-        runStats = null;
+
         int bestPerformingGeneration = 0;
 
         populationManager.reset();
@@ -103,27 +100,8 @@ public class GeneticAlgorithm<T> implements IGeneticAlgorithm<T> {
         //System.out.println("Generation took " + duration + "milliseconds");
         summarise(bestPerformer,bestPerformingGeneration);
 
-        PopulationStatistics<IMemberStatistics> stats = new PopulationStatistics<>();
-        IMemberStatistics<PopulationMember<T>> bestMember = new PopulationStatistics<>();
-        bestMember.setMeasure("Best Member",bestPerformer);
+        return new GeneticAlgorithmSummary<>(bestPerformer,duration,bestPerformingGeneration);
 
-        IMemberStatistics<Long> generationTime = new PopulationStatistics<>();
-        generationTime.setMeasure("Generation time",duration);
-
-        IMemberStatistics<Integer> generationFound = new PopulationStatistics<>();
-        generationFound.setMeasure("Found in generation",bestPerformingGeneration);
-
-        stats.setMeasure("Best member",bestMember);
-        stats.setMeasure("Generation run time",generationTime);
-        stats.setMeasure("Generation found",generationFound);
-
-        setRunStats(stats);
-
-        return bestPerformer;
-    }
-
-    private void setRunStats(PopulationStatistics<IMemberStatistics> stats) {
-        this.runStats = stats;
     }
 
     public void addOperator(IGeneticOperator<T> newOperator){
@@ -229,7 +207,4 @@ public class GeneticAlgorithm<T> implements IGeneticAlgorithm<T> {
         return this._printLevel;
     }
 
-    public PopulationStatistics<IMemberStatistics> getRunStats() {
-        return this.runStats;
-    }
 }

@@ -1,6 +1,7 @@
 package library.gpLibrary.models.primitives.functions.interfaces;
 
 
+import library.gpLibrary.models.primitives.nodes.abstractClasses.Node;
 import library.gpLibrary.models.primitives.nodes.abstractClasses.ValueNode;
 
 public abstract class IOperateUpFunction<T> extends ValueNode<T> {
@@ -18,6 +19,14 @@ public abstract class IOperateUpFunction<T> extends ValueNode<T> {
     @Override
     public boolean isFull() {
 
-        return children.size() == _maxChildren;
+        if(children.size() < _maxChildren)
+            return false;
+
+        for (Node<T> child : children) {
+            if(!child.isFull())
+                return false;
+        }
+
+        return true;
     }
 }

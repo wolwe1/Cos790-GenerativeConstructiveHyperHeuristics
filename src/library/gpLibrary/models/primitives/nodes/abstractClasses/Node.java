@@ -179,7 +179,7 @@ public abstract class Node<T>
         }
         else{
             for (Node<T> child : children) {
-                if(child.requiresTerminals(maxDepth)){
+                if(!child.isFull() && child.requiresTerminals(maxDepth)){
                     child.addTerminal(terminal, maxDepth);
                     return;
                 }

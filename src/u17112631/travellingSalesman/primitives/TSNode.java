@@ -5,8 +5,8 @@ import java.util.Objects;
 public class TSNode {
 
     int nodeNumber;
-    double xCoord;
-    double yCoord;
+    private double xCoord;
+    private double yCoord;
 
     public TSNode(String details) {
         String[] info = details.split(" ");
@@ -14,6 +14,10 @@ public class TSNode {
         nodeNumber = Integer.parseInt(info[0]);
         xCoord = Double.parseDouble(info[1]);
         yCoord = Double.parseDouble(info[2]);
+    }
+
+    protected TSNode(){
+
     }
 
     public TSNode(TSNode other) {

@@ -61,6 +61,11 @@ public class TSPFitnessFunction<T> extends FitnessFunction<T> {
             totalDistance += currentCityInTravel.getDistanceTo(nextCity);
             currentCityInTravel = nextCity;
         }
+        //Complete circuit to start
+        TSNode first = placedCities.get(0);
+        TSNode last = placedCities.get(placedCities.size() - 1);
+
+        totalDistance += last.getDistanceTo(first);
         return totalDistance;
     }
 

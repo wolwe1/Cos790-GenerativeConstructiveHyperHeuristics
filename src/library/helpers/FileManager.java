@@ -60,7 +60,7 @@ public class FileManager {
         if(!input.equals("")) baseDataDirectory = input;
     }
 
-    public void setupDirectories(boolean useDefault) {
+    public void setupDirectories(boolean useDefault,String fileName) {
 
         if(!useDefault){
             String input = "";
@@ -94,25 +94,29 @@ public class FileManager {
             }
         }
 
-
-        System.out.println("Please select the target file number: ");
         List<String> files = getFilesInDirectory(baseDirectory + baseDataDirectory);
+        if(fileName.isEmpty()){
+            System.out.println("Please select the target file number: ");
 
-        for (int i = 0; i < files.size(); i++) {
-            System.out.println("[" + (i + 1) +"]" + " " + files.get(i));
+            for (int i = 0; i < files.size(); i++) {
+                System.out.println("[" + (i + 1) +"]" + " " + files.get(i));
+            }
+
+            int fileNumber = 0;
+            try {
+                fileNumber = Integer.parseInt(reader.readLine());
+
+                fileName = files.get( fileNumber - 1);
+            } catch (IOException e) {
+                e.printStackTrace();
+                throw new RuntimeException("Could not parse file selection");
+            }
+            System.out.println("Using source : " + baseDirectory + baseDataDirectory + fileName);
+        }else{
+            this.fileName = fileName;
         }
 
-        int fileNumber = 0;
-        try {
-            fileNumber = Integer.parseInt(reader.readLine());
-        } catch (IOException e) {
-            e.printStackTrace();
-            throw new RuntimeException("Could not parse file selection");
-        }
 
-        fileName = files.get( fileNumber - 1);
-
-        System.out.println("Using source : " + baseDirectory + baseDataDirectory + fileName);
     }
 
 
@@ -126,9 +130,9 @@ public class FileManager {
         return readFile(myReader,specifics);
     }
 
-    public DataConverter loadDataConverter(){
+    public DataConverter loadDataConverter(String fileName){
 
-        setupDirectories(true);
+        setupDirectories(true,fileName);
         Scanner myReader = getFileReader();
 
         converter.loadData(readFile(myReader,""));

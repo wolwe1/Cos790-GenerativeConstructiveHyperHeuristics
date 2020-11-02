@@ -44,7 +44,7 @@ public class PopulationStatistics<T> implements IMemberStatistics<T> {
     public void print() {
 
         for (Map.Entry<String, T> measure : measures.entrySet()) {
-            System.out.printf("%-20.20s  %-30.60s%n",measure.getKey() + ": ",measure.getValue());
+            System.out.printf("%-30.40s  %-30.60s%n",measure.getKey() + ": ",measure.getValue());
         }
     }
 

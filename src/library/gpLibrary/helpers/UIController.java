@@ -103,9 +103,9 @@ public class UIController {
     }
 
 
-    public List<List<String>> getDataSets(int trainingSetPercentage) {
+    public List<List<String>> getDataSets(int trainingSetPercentage,String fileName) {
 
-        fileManager.setupDirectories(useDefault);
+        fileManager.setupDirectories(useDefault,fileName);
         if(useDefault){ //Perform dataset split
             this.data = fileManager.getData();
 

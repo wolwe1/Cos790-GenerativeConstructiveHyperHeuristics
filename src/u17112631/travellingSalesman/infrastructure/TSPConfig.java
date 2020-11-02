@@ -22,6 +22,7 @@ public class TSPConfig extends GeneticAlgorithmConfig<Double> {
         terminalSet.addTerminal( new NumberOfCitiesUnplaced());
         terminalSet.addTerminal( new TotalDistanceCovered());
         terminalSet.addTerminal( new TotalDistanceToUnplaced());
+        terminalSet.addTerminal( new DistanceToStart());
 
         return terminalSet;
     }

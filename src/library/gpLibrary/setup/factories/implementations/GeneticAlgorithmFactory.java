@@ -1,6 +1,9 @@
 package library.gpLibrary.setup.factories.implementations;
 
 import library.gpLibrary.infrastructure.abstractClasses.GeneticAlgorithm;
+import library.gpLibrary.infrastructure.implementation.operators.Crossover;
+import library.gpLibrary.infrastructure.implementation.operators.LazyReproduction;
+import library.gpLibrary.infrastructure.implementation.operators.Mutation;
 import library.gpLibrary.infrastructure.interfaces.IFitnessFunction;
 import library.gpLibrary.infrastructure.interfaces.IPopulationManager;
 import library.gpLibrary.infrastructure.interfaces.ITreeGenerator;
@@ -36,12 +39,22 @@ public class GeneticAlgorithmFactory<T> {
     private GeneticAlgorithm<T> createNew() {
 
         IPopulationManager<T> manager = createNewPopulationManager();
+        IFitnessFunction<T> fitnessFunction = manager.getFitnessFunction();
+        ITreeGenerator<T> generator = manager.getTreeGenerator();
 
         GeneticAlgorithm<T> geneticAlgorithm = new GeneticAlgorithm<>(
                 config.getPopulationSize(),config.getNumberOfGenerations(),manager);
 
         geneticAlgorithm.setPrintLevel(config.getPrintLevel());
 
+        //Add operators
+        geneticAlgorithm.addOperator(
+                LazyReproduction.create(
+                        config.getTournamentSize(),config.getPopulationSize(),
+                        config.getReproductionRate(),fitnessFunction));
+
+        geneticAlgorithm.addOperator(Mutation.create(config.getPopulationSize(),config.getMutationRate(),generator));
+        geneticAlgorithm.addOperator(Crossover.create(config.getPopulationSize(),config.getCrossoverRate(),generator));
         return geneticAlgorithm;
     }
 

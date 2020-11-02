@@ -5,6 +5,7 @@ import library.gpLibrary.helpers.Printer;
 import library.gpLibrary.helpers.UIController;
 import library.gpLibrary.infrastructure.abstractClasses.GeneticAlgorithm;
 import library.gpLibrary.infrastructure.interfaces.IFitnessFunction;
+import library.gpLibrary.models.highOrder.GeneticAlgorithmSummary;
 import library.gpLibrary.models.highOrder.implementation.PopulationMember;
 import library.gpLibrary.models.highOrder.implementation.PopulationStatistics;
 import library.gpLibrary.models.highOrder.interfaces.IMemberStatistics;
@@ -20,63 +21,70 @@ import u17112631.travellingSalesman.primitives.TSProblem;
 
 import java.util.ArrayList;
 import java.util.List;
-import java.util.Map;
+import java.util.stream.Collectors;
 
 public class GeneticAlgorithmRunner<T> {
 
+    public void runMonty(){
+        String[] executionFiles = {"symmetric\\city\\ch130.tsp","symmetric\\city\\ch150.tsp",
+                "symmetric\\city\\eil101.tsp","symmetric\\city\\eil51.tsp","symmetric\\city\\eil76.tsp"};
 
-    public void run(){
-        GeneticAlgorithmFactory<Double> factory = createFactory();
+        List<GeneticAlgorithmSummary<Double>> executionBests = new ArrayList<>();
 
-        runOnDataSet(factory);
+        for (String executionFile : executionFiles) {
+            System.out.println("Running on " + executionFile);
+            executionBests.add(run(executionFile));
+        }
 
+        System.out.println("Execution results");
+        summariseResults(executionBests);
     }
 
-    private void runOnDataSet(GeneticAlgorithmFactory<Double> factory) {
+    public GeneticAlgorithmSummary<Double> run(String file){
+        GeneticAlgorithmFactory<Double> factory = createFactory(file);
+        return runOnDataSet(factory);
+    }
+
+    private GeneticAlgorithmSummary<Double> runOnDataSet(GeneticAlgorithmFactory<Double> factory) {
 
         GeneticAlgorithm<Double> geneticAlgorithm = factory.createGeneticAlgorithm();
 
-        List<PopulationMember<Double>> bestMembersFromEachRun = performExecution(factory,geneticAlgorithm);
-        List<IMemberStatistics<Double>> runStats = getExecutionStatistics(bestMembersFromEachRun);
+        List<GeneticAlgorithmSummary<Double>> bestMembersFromEachRun = performExecution(factory,geneticAlgorithm);
 
         Printer.print("Execution completed");
         IFitnessFunction<Double> fitnessFunction = geneticAlgorithm.getFitnessFunction();
-        int bestMemberFromExecution = getBestPerformerOfRun(fitnessFunction,bestMembersFromEachRun);
+        int bestRunIndex = getBestPerformerOfRun(fitnessFunction,bestMembersFromEachRun);
 
-        PopulationMember<Double> bestMemberOfExecution = bestMembersFromEachRun.get(bestMemberFromExecution);
+        GeneticAlgorithmSummary<Double> bestMemberOfExecution = bestMembersFromEachRun.get(bestRunIndex);
 
-        printExecutionInformation(bestMemberFromExecution,bestMemberOfExecution,runStats);
+        printExecutionInformation(bestRunIndex,bestMemberOfExecution,bestMembersFromEachRun);
+
+        return bestMemberOfExecution;
     }
 
-    private void printExecutionInformation(int bestRunIndex,PopulationMember<Double> bestMemberFromExecution, List<IMemberStatistics<Double>> runStats) {
+    private void printExecutionInformation(int bestRunIndex, GeneticAlgorithmSummary<Double> bestMemberFromExecution, List<GeneticAlgorithmSummary<Double>> runResults) {
 
         Printer.print("Best performer from execution");
-        Printer.print(bestMemberFromExecution.getId() + " : " + bestMemberFromExecution.getFitness());
-        Printer.print("Found in run: " + bestRunIndex);
+        Printer.print(bestMemberFromExecution.bestPerformer.getId() + " : " + bestMemberFromExecution.bestPerformer.getFitness());
+        Printer.print("Found in run: " + (bestRunIndex + 1));
         Printer.underline();
 
+
+        summariseResults(runResults);
+    }
+
+    private void summariseResults(List<GeneticAlgorithmSummary<Double>> runResults) {
+        List<IMemberStatistics<Double>> runStats = runResults.stream().map(GeneticAlgorithmSummary::getStats).collect(Collectors.toList());
         PopulationStatistics<Double> averageOfRuns = StatisticsManager.calculateAverages(runStats);
         PopulationStatistics<Double> standardDeviationOfRuns = StatisticsManager.calculateStandardDeviation(runStats);
         averageOfRuns.print();
         standardDeviationOfRuns.print();
     }
 
-    private List<IMemberStatistics<Double>> getExecutionStatistics(List<PopulationMember<Double>> bestMembersFromEachRun) {
 
-        List<IMemberStatistics<Double>> runStats = new ArrayList<>();
-        for (PopulationMember<Double> member : bestMembersFromEachRun) {
+    private List<GeneticAlgorithmSummary<Double>> performExecution(GeneticAlgorithmFactory<Double> factory, GeneticAlgorithm<Double> geneticAlgorithm) {
 
-            PopulationStatistics<Double> runStat = new PopulationStatistics<>();
-            runStat.setMeasure("Run best fitness",member.getFitness());
-            runStats.add(runStat);
-        }
-        return runStats;
-    }
-
-    private List<PopulationMember<Double>> performExecution(GeneticAlgorithmFactory<Double> factory, GeneticAlgorithm<Double> geneticAlgorithm) {
-
-        List<PopulationMember<Double>> bestMembersFromEachRun = new ArrayList<>();
-        List<PopulationStatistics<IMemberStatistics>> runStats = new ArrayList<>();
+        List<GeneticAlgorithmSummary<Double>> runStats = new ArrayList<>();
 
         PrintLevel printLevel = geneticAlgorithm.getPrintLevel();
         for (int i = 0; i < factory.getConfig().getNumberOfRuns(); i++) {
@@ -87,32 +95,21 @@ public class GeneticAlgorithmRunner<T> {
             }
 
             geneticAlgorithm.setSeed(i);
-            PopulationMember<Double> bestOfRun = geneticAlgorithm.run();
-            PopulationStatistics<IMemberStatistics> runStat = geneticAlgorithm.getRunStats();
-            runStats.add(runStat);
-            bestMembersFromEachRun.add(bestOfRun);
+            runStats.add(geneticAlgorithm.run());
 
             if(printLevel != PrintLevel.NONE)
                 Printer.underline();
 
         }
-
-        for (PopulationStatistics<IMemberStatistics> runStat : runStats) {
-
-            for (Map.Entry<String, IMemberStatistics> runStatistics : runStat.getMeasures().entrySet()) {
-                IMemberStatistics aRunsStats = runStatistics.getValue();
-
-            }
-        }
-        return bestMembersFromEachRun;
+        return runStats;
     }
 
-    private int getBestPerformerOfRun(IFitnessFunction<Double> fitnessFunction, List<PopulationMember<Double>> bestMembersFromEachRun) {
-        int bestRun = 1;
+    private int getBestPerformerOfRun(IFitnessFunction<Double> fitnessFunction, List<GeneticAlgorithmSummary<Double>> bestMembersFromEachRun) {
+        int bestRun = 0;
         double bestFitness = fitnessFunction.getWorstPossibleValue();
 
         for (int i = 1, bestMembersFromEachRunSize = bestMembersFromEachRun.size(); i < bestMembersFromEachRunSize; i++) {
-            PopulationMember<Double> bestMemberFromRun = bestMembersFromEachRun.get(i);
+            PopulationMember<Double> bestMemberFromRun = bestMembersFromEachRun.get(i).bestPerformer;
 
             if (fitnessFunction.firstFitterThanSecond(bestMemberFromRun.getFitness(), bestFitness)) {
                 bestFitness = bestMemberFromRun.getFitness();
@@ -123,11 +120,11 @@ public class GeneticAlgorithmRunner<T> {
         return bestRun;
     }
 
-    private GeneticAlgorithmFactory<Double> createFactory() {
+    private GeneticAlgorithmFactory<Double> createFactory(String fileName) {
         FileManager fileManager = new FileManager(new DataConverter());
         UIController ui = new UIController(true,fileManager);
 
-        DataConverter converter = fileManager.loadDataConverter();
+        DataConverter converter = fileManager.loadDataConverter(fileName);
 
         TSProblem problem = converter.getProblem();
         GeneticAlgorithmFactory<Double> factory = new GeneticAlgorithmFactory<>(
