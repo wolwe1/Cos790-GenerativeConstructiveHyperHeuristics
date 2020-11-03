@@ -13,6 +13,7 @@ public abstract class TSPTerminal extends ValueNode<Double> {
     protected TSPTerminal(String name) {
         super(name);
         value = 0;
+        _maxChildren = 0;
     }
 
     protected TSPTerminal(Node<Double> other) {

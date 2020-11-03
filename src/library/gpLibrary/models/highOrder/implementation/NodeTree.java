@@ -17,7 +17,7 @@ public abstract class NodeTree<T>
     public int maxBreadth;
 
     protected int maxNodes;
-    protected int numberOfNodes;
+    public int numberOfNodes;
 
     public NodeTree(int maxDepth,int maxBreadth)
     {
@@ -203,5 +203,6 @@ public abstract class NodeTree<T>
 
     public void addTerminal(Node<T> terminal) {
         getRoot().addTerminal(terminal,maxDepth - 1);
+        numberOfNodes++;
     }
 }

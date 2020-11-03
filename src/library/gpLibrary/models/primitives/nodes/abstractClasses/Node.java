@@ -174,12 +174,17 @@ public abstract class Node<T>
             try {
                 addChild(terminal);
             } catch (Exception e) {
-                throw new RuntimeException("Unable to load terminal node");
+                for (Node<T> child : children) {
+                    if(child.requiresTerminals(maxDepth)){
+                        child.addTerminal(terminal, maxDepth);
+                        return;
+                    }
+                }
             }
         }
         else{
             for (Node<T> child : children) {
-                if(!child.isFull() && child.requiresTerminals(maxDepth)){
+                if(child.requiresTerminals(maxDepth)){
                     child.addTerminal(terminal, maxDepth);
                     return;
                 }

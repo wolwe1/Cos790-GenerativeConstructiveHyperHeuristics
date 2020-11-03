@@ -78,12 +78,12 @@ public abstract class GeneticAlgorithmConfig<T> {
         lookAhead = (int) uiController.askNumber("Look Ahead",0);
 
         //Genetic algorithm
-        populationSize = (int) uiController.askNumber("Population Size",10);
-        numberOfGenerations = (int) uiController.askNumber("Number of generations",5);
+        populationSize = (int) uiController.askNumber("Population Size",100);
+        numberOfGenerations = (int) uiController.askNumber("Number of generations",100);
         numberOfRuns = (int) uiController.askNumber("Number of runs",10);
         tournamentSize = (int) uiController.askNumber("Tournament size",2);
-        reproductionRate = uiController.askNumber("Reproduction rate",0.2);
-        mutationRate = uiController.askNumber("Mutation rate",0.2);
+        reproductionRate = uiController.askNumber("Reproduction rate",0.3);
+        mutationRate = uiController.askNumber("Mutation rate",0.3);
         crossoverRate = uiController.askNumber("Crossover rate",0.2);
 
         //Other

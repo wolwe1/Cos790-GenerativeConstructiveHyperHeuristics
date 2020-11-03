@@ -26,16 +26,27 @@ public abstract class BasicFunction<T> extends IOperateUpFunction<T> {
 
     @Override
     public boolean requiresTerminals(int maxDepth) {
-        if(_level >= maxDepth - 1){
-            return true;
+
+        //Node is full but must check subtrees
+        if(children.size() == _maxChildren){
+            for (Node<T> child : children) {
+                if(child.requiresTerminals(maxDepth))
+                    return true;
+            }
+
+            return false;
+
+            //Only one child, must check self and child
+        }else if( children.size() < _maxChildren && children.size() != 0){
+
+            for (Node<T> child : children) {
+                if(child.requiresTerminals(maxDepth))
+                    return true;
+            }
+
         }
 
-        for (Node<T> child : children) {
-            if(child.requiresTerminals(maxDepth))
-                return true;
-        }
-
-        return false;
+        return _level >= maxDepth - 1;
     }
 
     @Override

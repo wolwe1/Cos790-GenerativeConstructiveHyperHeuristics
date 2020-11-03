@@ -71,6 +71,7 @@ public abstract class TreeGenerator<T> implements ITreeGenerator<T> {
 
 
         while (!tree.isFull()) {
+
             try {
                 if(tree.requiresTerminals())
                     tree.addTerminal(pickTerminal());
