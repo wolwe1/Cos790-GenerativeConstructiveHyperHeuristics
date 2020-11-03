@@ -75,19 +75,19 @@ public abstract class GeneticAlgorithmConfig<T> {
         maxIncrease = (int) uiController.askNumber("Maximum depth increase",2);
         terminalChance = (int) uiController.askNumber("Terminal chance",0.2);
 
-        lookAhead = (int) uiController.askNumber("Look Ahead",0);
+        //lookAhead = (int) uiController.askNumber("Look Ahead",0);
 
         //Genetic algorithm
         populationSize = (int) uiController.askNumber("Population Size",100);
         numberOfGenerations = (int) uiController.askNumber("Number of generations",100);
         numberOfRuns = (int) uiController.askNumber("Number of runs",10);
         tournamentSize = (int) uiController.askNumber("Tournament size",2);
-        reproductionRate = uiController.askNumber("Reproduction rate",0.3);
-        mutationRate = uiController.askNumber("Mutation rate",0.3);
-        crossoverRate = uiController.askNumber("Crossover rate",0.2);
+        reproductionRate = uiController.askNumber("Reproduction rate",0.4);
+        mutationRate = uiController.askNumber("Mutation rate",0.2);
+        crossoverRate = uiController.askNumber("Crossover rate",0.4);
 
         //Other
-        trainingSetPercentage = (int) uiController.askNumber("Training set percentage",0.7);
+        //trainingSetPercentage = (int) uiController.askNumber("Training set percentage",0.7);
         printLevel = (PrintLevel) uiController.askEnum("Printout level",PrintLevel.class,PrintLevel.NONE);
 
         functionSet = createFunctionSet();

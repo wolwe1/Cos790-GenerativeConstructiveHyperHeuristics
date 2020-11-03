@@ -4,7 +4,7 @@ import u17112631.travellingSalesman.primitives.TSProblem;
 
 import java.util.List;
 
-public class DataConverter {
+public class TSPDataConverter {
 
     TSProblem problem;
 

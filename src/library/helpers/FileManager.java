@@ -1,6 +1,6 @@
 package library.helpers;
 
-import u17112631.travellingSalesman.DataConverter;
+import u17112631.travellingSalesman.TSPDataConverter;
 
 import java.io.*;
 import java.nio.file.Files;
@@ -13,13 +13,13 @@ import java.util.stream.Stream;
 
 public class FileManager {
 
-    private final DataConverter converter;
+    private final TSPDataConverter converter;
     public String baseDirectory;
     public String baseDataDirectory;
     public String fileName;
     private final BufferedReader reader;
 
-    public FileManager(DataConverter converter){
+    public FileManager(TSPDataConverter converter){
         baseDirectory = System.getProperty("user.dir") + "\\";
         baseDataDirectory = "data" + "\\";
         fileName = "fileName.csv";
@@ -130,7 +130,7 @@ public class FileManager {
         return readFile(myReader,specifics);
     }
 
-    public DataConverter loadDataConverter(String fileName){
+    public TSPDataConverter loadDataConverter(String fileName){
 
         setupDirectories(true,fileName);
         Scanner myReader = getFileReader();

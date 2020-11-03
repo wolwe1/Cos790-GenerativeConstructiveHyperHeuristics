@@ -12,7 +12,7 @@ import library.gpLibrary.models.highOrder.interfaces.IMemberStatistics;
 import library.gpLibrary.models.primitives.enums.PrintLevel;
 import library.gpLibrary.setup.factories.implementations.GeneticAlgorithmFactory;
 import library.helpers.FileManager;
-import u17112631.travellingSalesman.DataConverter;
+import u17112631.travellingSalesman.TSPDataConverter;
 import u17112631.travellingSalesman.TSPFitnessFunctionFactory;
 import u17112631.travellingSalesman.TSPPopulationManagerFactory;
 import u17112631.travellingSalesman.TSPTreeGeneratorFactory;
@@ -27,7 +27,11 @@ public class GeneticAlgorithmRunner<T> {
 
     public void runMonty(){
         String[] executionFiles = {"symmetric\\city\\ch130.tsp","symmetric\\city\\ch150.tsp",
-                "symmetric\\city\\eil101.tsp","symmetric\\city\\eil51.tsp","symmetric\\city\\eil76.tsp"};
+                "symmetric\\city\\eil101.tsp","symmetric\\city\\eil51.tsp","symmetric\\city\\eil76.tsp"//};
+
+        ,//String[] executionFiles = {
+                "asymmetric\\ft53.atsp","asymmetric\\ft70.atsp","asymmetric\\ftv33.atsp",
+                "asymmetric\\ftv44.atsp","asymmetric\\br17.atsp"};
 
         List<GeneticAlgorithmSummary<Double>> executionBests = new ArrayList<>();
 
@@ -121,10 +125,12 @@ public class GeneticAlgorithmRunner<T> {
     }
 
     private GeneticAlgorithmFactory<Double> createFactory(String fileName) {
-        FileManager fileManager = new FileManager(new DataConverter());
-        UIController ui = new UIController(true,fileManager);
+        FileManager fileManager = new FileManager(new TSPDataConverter());
 
-        DataConverter converter = fileManager.loadDataConverter(fileName);
+        //UIController ui = new UIController(true,fileManager);
+        UIController ui = new UIController(fileManager);
+
+        TSPDataConverter converter = fileManager.loadDataConverter(fileName);
 
         TSProblem problem = converter.getProblem();
         GeneticAlgorithmFactory<Double> factory = new GeneticAlgorithmFactory<>(

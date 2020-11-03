@@ -1,9 +1,7 @@
 package u17112631.travellingSalesman.primitives;
 
 import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.List;
-import java.util.stream.Stream;
 
 public class TSProblem {
 
@@ -30,36 +28,47 @@ public class TSProblem {
             loadAsymmetric(fileData);
     }
 
-    private void loadAsymmetric(List<String> fileData) {
+    private String[] concatenateRowsIntoArrayOfWeights(List<String> fileData){
 
-        List<String[]> nodeStrings = new ArrayList<>();
         List<String> nodeLines = new ArrayList<>();
 
-
+        //Read file data into list
         for (int i = 7; i < fileData.size(); i++) {
             if(fileData.get(i).equals("EOF"))
                 break;
             nodeLines.add(fileData.get(i));
         }
-        //str.split("\\s+")
 
-        for (int i = 0, nodeLinesSize = nodeLines.size(); i < nodeLinesSize; i+= 2) {
-            String nodeLine = nodeLines.get(i).trim();
-            String extraValue = nodeLines.get(i+1).trim();
-
-            String[] weightsFromFirstLine = nodeLine.split("\\s+");
-            String[] weightsFromSecondLine = extraValue.split("\\s+");
-
-            String[] both = Stream.concat(Arrays.stream(weightsFromFirstLine), Arrays.stream(weightsFromSecondLine))
-                    .toArray(String[]::new);
-
-            nodeStrings.add(both);
+        //Concatenate rows into single string for easier use
+        StringBuilder concatenatedRows = new StringBuilder();
+        for (String nodeLine : nodeLines) {
+            concatenatedRows.append(nodeLine);
         }
 
-        for (int i = 0, nodeStringsSize = nodeStrings.size(); i < nodeStringsSize; i++) {
-            String[] nodeString = nodeStrings.get(i);
-            nodes.add(new AsymmetricTSNode(i,nodeString));
+        //Create array of weight values
+        String[] weights = concatenatedRows.toString().trim().split("\\s+");
+
+        assert weights.length == Math.pow(dimension,2);
+
+        return weights;
+    }
+    private void loadAsymmetric(List<String> fileData) {
+
+        List<String[]> nodeStrings = new ArrayList<>();
+        String[] weights = concatenateRowsIntoArrayOfWeights(fileData);
+
+        //For each node
+        for (int i = 0; i < dimension; i++) {
+
+            //For each weight from the current node to other node
+            String[] weightsFromNodeToOtherNodes = new String[dimension];
+
+            System.arraycopy(weights, i * dimension, weightsFromNodeToOtherNodes, 0, dimension);
+
+            nodes.add(new AsymmetricTSNode(i,weightsFromNodeToOtherNodes));
         }
+
+        assert nodes.size() == dimension;
     }
 
     private void loadSymmetric(List<String> fileData) {

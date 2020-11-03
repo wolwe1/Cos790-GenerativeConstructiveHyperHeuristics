@@ -25,6 +25,13 @@ public class UIController {
         this.useDefault = useDefault;
     }
 
+    public UIController(FileManager fileManager) {
+        this.fileManager = fileManager;
+        this.reader = new BufferedReader(new InputStreamReader(System.in));
+
+        this.useDefault = askBool("Use defaults");
+    }
+
     public double askNumber(String question, double defaultVal) {
         if(useDefault)
             return defaultVal;
@@ -36,7 +43,8 @@ public class UIController {
 
         System.out.print(question + " : ");
         try {
-            return reader.readLine();
+            String res = reader.readLine();
+            return res;
         } catch (IOException e) {
             throw new RuntimeException("Could not read user input");
         }
